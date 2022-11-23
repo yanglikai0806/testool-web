@@ -25,28 +25,35 @@
         :pagination="false"
         :rowKey="record=>record.id"
       >
-      <span slot="case_step" slot-scope="text">
-        <p>{{text.step}}</p>
+      <span slot="case_count" slot-scope="text">
+        <a-tag color="blue">{{text.length}}</a-tag>
       </span>
       <span slot="check_point" slot-scope="text">
         <p>{{text}}</p>
       </span>
       <span slot="status" slot-scope="text,record">
-        <a-tag v-if="record.flag === 1" color="green"> 上线 </a-tag>
-        <a-tag v-else-if="record.flag === 2" color="red"> 新增 </a-tag>
+        <a-tag v-if="record.task_status === 0" color="green"> 空闲 </a-tag>
+        <a-tag v-else-if="record.task_status === 1" color="yellow"> 执行中 </a-tag>
+        <a-tag v-else-if="record.task_status === 2" color="red"> 完成 </a-tag>
+        <a-tag v-else-if="record.task_status === 3" color="pink"> 更新 </a-tag>
         <a-tag v-else color="gray"> 下线 </a-tag>
       </span>
       <span slot="operation" slot-scope="text,record">
         <a @click="showDrawer(record)">编辑</a>
         <a-divider type="vertical" />
+        <a @click="startTask(record)" >{{record.task_status === 1?'停止':'启动'}}</a>
+        <a-divider type="vertical" />
         <a-popconfirm
                 title="确认执行该操作吗?"
                 ok-text="是"
                 cancel-text="否"
-                @confirm="shiftStatus(record)"
+                @confirm="deleteTask(record)"
         >
-      <a>{{record.flag === 1? "下线": "上线"}}</a>
+      <a>删除</a>
       </a-popconfirm>
+      <a-divider type="vertical" />
+      <a @click="openReport(record)">报告</a>
+
       </span>
 
       </a-table>
@@ -70,14 +77,14 @@
     <div>
     </div>
     <a-drawer
-      :key="caseRecord.id"
-      title="创建测试任务"
+      key="create_task"
+      title="编辑测试任务"
       :width="600"
       :visible="drawerVisible"
       :body-style="{ paddingBottom: '80px'}"
       @close="drawerClose"
     >
-      <task-create></task-create>
+      <task-create :record="task_param"></task-create>
     </a-drawer>
 
   </div>
@@ -102,9 +109,7 @@
       return {
         // drawer
         drawerVisible: false,
-        caseRecord:{},
-        apkList:[],
-        domainMap:{},
+        task_param:{},
         // 分页控件参数
         pageSizeOptions: ['10', '20', '30', '40', '50'],
         page: 1,
@@ -118,15 +123,21 @@
             width: "5%",
           },
           {
-            title: '用例集合',
-            dataIndex: "set",
-            width: "5%",
+            title: '应用',
+            dataIndex: "apk",
+            width: "10%",
+          },
+          {
+            title: '用例数量',
+            dataIndex: "case_list",
+            width: "10%",
+            scopedSlots: { customRender: "case_count" },
           },
           {
             title: '执行模式',
-            dataIndex: "check_point",
-            width: "15%",
-            scopedSlots: { customRender: "check_point" },
+            dataIndex: "task_mode",
+            width: "10%",
+            scopedSlots: { customRender: "task_mode" },
           },
           {
             title: '创建时间',
@@ -139,22 +150,27 @@
             width: "10%",
           },
           {
-            title: '任务状态',
+            title: '状态',
             dataIndex: "status",
             width: "5%",
             scopedSlots: { customRender: "status" },
           },
           {
             title: '维护人',
-            dataIndex: "owner",
-            key: "owner",
+            dataIndex: "task_owner",
+            key: "task_owner",
             width: "10%",
+          },
+          {
+            title: '描述',
+            dataIndex: "task_note",
+            key: "task_note",
           },
           {
             title: '操作',
             dataIndex: "operation",
             key: "operation",
-            width: "10%",
+            width: "15%",
             scopedSlots: { customRender: "operation" },
           }
 
@@ -162,6 +178,7 @@
         data:[],
         dataCopy:[], //用于搜索时暂存数据
         dataCount:0,
+        //操作
       }
     },
     methods:{
@@ -195,26 +212,11 @@
     },
       async getTaskList(){
         const res = await getTaskDataApi({query:"task_list"});
+        console.log(res)
         this.dataCopy = res.data.task_list || [];
         this.dataCount = this.dataCopy.length;
         this.data = this.dataCopy.slice((this.page-1)*this.limit, this.page*this.limit);
         this.total = this.dataCopy.length
-      },
-
-      shiftStatus(record){
-        record.flag = Math.abs(1 - record.flag)
-        let _data = {
-          table: "test_cases",
-          what:"update",
-          case_data: record,
-          find:{id: record.id}
-        }
-        modifyTaskApi(_data).then(resp=>{
-          console.log(resp)
-          this.$message.info(resp.desc)
-          console.log(resp.data)
-        })
-
       },
       // 分页逻辑
       onChange(page, pageSize){
@@ -232,20 +234,37 @@
       // drawer
       showDrawer(record){
         console.log(record)
-        if (record) {
-          this.drawerVisible = true
-          this.caseRecord = record
-          this.auto_case = record.id
-        } else {
-          this.drawerVisible = true
-          this.auto_case = -1
-        }
+        this.drawerVisible = true
+        this.task_param = record
 
       },
-
       drawerClose(){
         this.drawerVisible = false
       },
+      // 操作
+      // 启动任务
+      startTask(record){
+        let data = {task_id: record.id, case_list: record.case_list, task_status: 1}
+        if (record.task_status === 1) {
+          data = {task_id: record.id, case_list: record.case_list, task_status: 2}
+        }
+        modifyTaskApi({data}).then(res=>{
+          console.log(res)
+          this.getTaskList()
+        })
+
+      },
+
+      deleteTask(record){
+        let data = {task_id: record.id, task_status: -1}
+        modifyTaskApi({data}).then(res=>{
+          console.log(res)
+          this.getTaskList()
+        })
+      },
+      openReport(){
+
+      }
     }
   }
 </script>
