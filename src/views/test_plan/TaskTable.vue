@@ -71,21 +71,21 @@
     </div>
     <a-drawer
       :key="caseRecord.id"
-      title="自动化用例"
-      :width="480"
+      title="创建测试任务"
+      :width="600"
       :visible="drawerVisible"
       :body-style="{ paddingBottom: '80px'}"
       @close="drawerClose"
     >
-      <case-auto-test :key="caseRecord.id" :json-case-id="auto_case" :case-content="caseRecord"></case-auto-test>
+      <task-create></task-create>
     </a-drawer>
 
   </div>
 </template>
 
 <script>
-  import CaseAutoTest from "../auto_case/CaseAutoTest";
-  import {getCasesApi, modifyCaseApi} from '@/apis/case'
+  import {modifyTaskApi, getTaskDataApi} from '@/apis/task'
+  import TaskCreate from "./TaskCreate";
   export default {
     name: "TaskTable",
     props:{
@@ -94,15 +94,17 @@
         default: ""
       }
     },
-    components: {CaseAutoTest},
+    components: {TaskCreate},
     mounted() {
-      this.getCasesData()
+      this.getTaskList()
     },
     data(){
       return {
         // drawer
         drawerVisible: false,
         caseRecord:{},
+        apkList:[],
+        domainMap:{},
         // 分页控件参数
         pageSizeOptions: ['10', '20', '30', '40', '50'],
         page: 1,
@@ -168,13 +170,13 @@
         console.log(value)
         if (value === "offline"){
           this.flag = 0
-          this.getCasesData(0)
+          this.getTaskList(0)
         } else if (value==="online"){
           this.flag = 1
-          this.getCasesData(1)
+          this.getTaskList(1)
         } else if (value === "update"){
           this.flag = 2
-          this.getCasesData(2)
+          this.getTaskList(2)
         }
       },
 
@@ -191,15 +193,11 @@
       }
 
     },
-    // table
-      async getCasesData(flag){
-        if (this.dataFrom === ""){
-          return
-        }
-        const res = await getCasesApi(flag)
-        this.dataCopy = res.data
-        this.dataCount = this.dataCopy.length
-        this.data = this.dataCopy.slice((this.page-1)*this.limit, this.page*this.limit)
+      async getTaskList(){
+        const res = await getTaskDataApi({query:"task_list"});
+        this.dataCopy = res.data.task_list || [];
+        this.dataCount = this.dataCopy.length;
+        this.data = this.dataCopy.slice((this.page-1)*this.limit, this.page*this.limit);
         this.total = this.dataCopy.length
       },
 
@@ -211,7 +209,7 @@
           case_data: record,
           find:{id: record.id}
         }
-        modifyCaseApi(_data).then(resp=>{
+        modifyTaskApi(_data).then(resp=>{
           console.log(resp)
           this.$message.info(resp.desc)
           console.log(resp.data)

@@ -7,7 +7,7 @@ var instance = axios.create({
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
   },
-  timeout: 30000,
+  timeout: 60000,
   baseURL: process.env.VUE_APP_BASE_API,
 })
 

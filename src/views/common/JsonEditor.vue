@@ -44,7 +44,7 @@
                 this.$emit("updateJson", value)
             },
             onError(value) {
-                // console.log("json格式错误:", value);
+                console.log("json格式错误:", value);
                 this.hasJsonFlag = false
             },
             // 检查json

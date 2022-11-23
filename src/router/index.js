@@ -29,7 +29,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/task_plan',
-        component: () => import('@/views/iframe_page/IframePage')
+        component: () => import('@/views/test_plan/index')
       }
     ]
   },
