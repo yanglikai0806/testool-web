@@ -5,11 +5,11 @@
       <div class="logo">{{ !collapsed ? "测试平台" : "测试" }}</div>
       <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
       <a-sub-menu key="2">
-        <span slot="title"><a-icon type="solution" />{{ !collapsed ? "测试计划" : "" }}</span>
+        <span slot="title"><a-icon type="solution" />{{ !collapsed ? "测试任务" : "" }}</span>
         <a-menu-item key="2-1">
           <router-link to="/task_plan">
             <a-icon type="control" />
-            测试任务配置
+            测试计划
           </router-link>
         </a-menu-item>
       </a-sub-menu>

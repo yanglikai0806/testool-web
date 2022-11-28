@@ -77,7 +77,7 @@
     <div>
     </div>
     <a-drawer
-      key="create_task"
+      :key="task_param.id||-1"
       title="编辑测试任务"
       :width="600"
       :visible="drawerVisible"
@@ -256,13 +256,15 @@
       },
 
       deleteTask(record){
-        let data = {task_id: record.id, task_status: -1}
+        let data = {task_id: record.id, task_status: -1};
         modifyTaskApi({data}).then(res=>{
           console.log(res)
           this.getTaskList()
         })
       },
-      openReport(){
+      openReport(record){
+        console.log("/test/task_plan?task_id="+record.id)
+        window.open("/task_plan?task_id="+record.id);
 
       }
     }

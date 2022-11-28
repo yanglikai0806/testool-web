@@ -58,14 +58,13 @@
                         全选
                     </a-checkbox>
                 </div>
-                <br />
                 <a-row v-for="(val,key) in options" :key="key">
 <!--                    <div :style="{ borderBottom: '1px solid #E9E9E9' }">-->
 <!--                        <a-checkbox :checked="checkDomain" :key="key" @change="onCheckDomainChange">-->
 <!--                            {{key}}-->
 <!--                        </a-checkbox>-->
 <!--                    </div>-->
-                    <br />
+                    <a-divider orientation="left">{{key + " (" + val.length + " 个)"}}</a-divider>
                     <a-checkbox-group v-model="checkedMap[key]" :options="val" @change="onChange"/>
                 </a-row>
             </a-form-item>
@@ -114,16 +113,17 @@
           }
         },
         created(){
-            if (this.record){
+            if (Object.keys(this.record).length > 0){
                 this.task_id = this.record.id
                 this.selectedApk = this.record.apk
-                this.selectedDomain = Object.keys(this.record.case_map)
+                this.selectedDomain = Object.keys(this.record.case_map||{})
                 this.selectedTaskMode = this.record.task_mode
                 this.selectedEnv = this.record.task_env
                 this.selectedTester = this.record.task_owner
                 this.description = this.record.task_note
                 this.checkedMap = this.record.case_map
                 this.options = this.record.case_map
+                this.getDomainsFromApk()
             }
         },
         mounted(){
@@ -208,6 +208,7 @@
                 const res = await getTaskDataApi(param);
                 this.apks = res.data.apk_map || {};
             },
+
             getDomainsFromApk(){
                 if (!this.selectedApk){
                     this.$message.warn("请选择被测应用")
