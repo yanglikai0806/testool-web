@@ -52,7 +52,7 @@
       <a>删除</a>
       </a-popconfirm>
       <a-divider type="vertical" />
-      <a @click="openReport(record)">报告</a>
+      <a :href="`${baseUrl}/task_plan?task_id=${record.id}`" target="_blank">报告</a>
 
       </span>
 
@@ -84,7 +84,7 @@
       :body-style="{ paddingBottom: '80px'}"
       @close="drawerClose"
     >
-      <task-create :record="task_param"></task-create>
+      <task-create :record="task_param" @updateTaskList="getTaskList"></task-create>
     </a-drawer>
 
   </div>
@@ -107,6 +107,7 @@
     },
     data(){
       return {
+        baseUrl:process.env.VUE_APP_BASE_API,
         // drawer
         drawerVisible: false,
         task_param:{},
@@ -262,11 +263,7 @@
           this.getTaskList()
         })
       },
-      openReport(record){
-        console.log("/test/task_plan?task_id="+record.id)
-        window.open("/task_plan?task_id="+record.id);
 
-      }
     }
   }
 </script>

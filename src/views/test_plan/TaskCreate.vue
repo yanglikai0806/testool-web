@@ -233,6 +233,7 @@
                 }
                 modifyTaskApi({data}).then(res=>{
                     console.log(res)
+                    this.$emit("updateTaskList")
                 })
 
             }

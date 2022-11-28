@@ -66,7 +66,18 @@ export const constantRoutes = [
       },
     ]
   },
-]
+  {
+    path: '/image',
+    component: Layout,
+    redirect:"/image",
+    children: [
+      {
+        path: '/image',
+        component: () => import('@/views/image_shop/index')
+      },
+    ]
+  },
+];
 
 const createRouter = () =>
   new Router({

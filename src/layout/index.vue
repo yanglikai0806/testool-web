@@ -37,18 +37,18 @@
             图像资源
           </router-link>
         </a-menu-item>
-        <a-menu-item key="5-3">
-          <router-link to="/action">
-            <a-icon type="table" />
-            基础操作库
-          </router-link>
-        </a-menu-item>
-        <a-menu-item key="5-4">
-          <router-link to="/appmap">
-            <a-icon type="table" />
-            应用信息库
-          </router-link>
-        </a-menu-item>
+<!--        <a-menu-item key="5-3">-->
+<!--          <router-link to="/action">-->
+<!--            <a-icon type="table" />-->
+<!--            基础操作库-->
+<!--          </router-link>-->
+<!--        </a-menu-item>-->
+<!--        <a-menu-item key="5-4">-->
+<!--          <router-link to="/check">-->
+<!--            <a-icon type="table" />-->
+<!--            基础检查库-->
+<!--          </router-link>-->
+<!--        </a-menu-item>-->
       </a-sub-menu>
       </a-menu>
     </a-layout-sider>
