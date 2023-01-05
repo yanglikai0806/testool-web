@@ -33,7 +33,7 @@
 
 <script>
   import JsonEditor from "../common/JsonEditor";
-  import {debugAutoCaseApi, getCaseApi, modifyCaseApi} from "@/apis/case";
+  import {getCaseApi, modifyCaseApi} from "@/apis/case";
 
   export default {
     name: "CaseAutoTest",
