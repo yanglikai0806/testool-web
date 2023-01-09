@@ -23,7 +23,7 @@
         ok-text="确定"
         cancel-text="取消"
         @ok="debugCase"
-        @cancel="handleCancel"
+        @cancel="handleCancel"     
     >
       <a-input v-model="deviceId"></a-input>
       <p style="margin: 3px">注:自动化测试工具开启调试任务</p>
@@ -136,7 +136,13 @@
       },
 
       debugCase(){
-        debugAutoCaseApi(this.deviceId, [this.json]).then(resp=>{
+        let _data = {
+          table: "debug_case",
+          what:"update",
+          case_data: Object.assign(this.json, {device_id: this.deviceId}),
+          find:{device_id: this.deviceId}
+        }
+        modifyCaseApi(_data).then(resp=>{
           console.log(resp)
           this.$message.info(resp.desc)
         })
@@ -152,7 +158,7 @@
 </script>
 
 <style scoped>
-  >>> .jsoneditor-outer {
+  .jsoneditor-outer {
     height: 600px;
   }
   .json-action {
