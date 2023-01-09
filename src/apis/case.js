@@ -21,6 +21,3 @@ export function modifyCaseApi(_data){
     return axiosPost('/cases', _data)
 }
 
-export function debugAutoCaseApi(sn, _data){
-    return axiosPost(`/debug_submit?sn=${sn}`, _data)
-}
